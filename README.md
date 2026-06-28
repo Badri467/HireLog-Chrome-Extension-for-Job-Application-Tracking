@@ -1,7 +1,9 @@
 # HireLog — Job Application Tracker Extension
 
 > Track every job application automatically from **any** career portal. One-click save, Google Sheets cloud sync, smart duplicate detection, and follow-up reminders.
+## 🚀 Live Extension
 
+👉 **Chrome Web Store:** https://chromewebstore.google.com/detail/dpkomppbgnhpnofnlmbnokdeenhfcabd
 ---
 
 ## 🚀 Quick Setup
