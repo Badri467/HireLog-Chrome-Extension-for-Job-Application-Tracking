@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HireLog</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+
+  <!-- ══ Success Overlay ══════════════════════ -->
+  <div class="success-overlay" id="successOverlay" role="status" aria-live="polite">
+    <div class="success-icon" aria-hidden="true">✓</div>
+    <div class="success-company" id="successCompany"></div>
+    <div class="success-role"    id="successRole"></div>
+    <div class="success-sub"     id="successSub">Saved to HireLog</div>
+  </div>
+
+  <!-- ══ Header ═══════════════════════════════ -->
+  <header class="popup-header">
+    <div class="logo">
+      <img src="../icons/hirelog-logo.svg" alt="HireLog">
+      <div class="logo-text">
+        <span class="brand-name">HireLog</span>
+        <span class="brand-tagline">Job Application Tracker</span>
+      </div>
+    </div>
+    <span class="detection-badge" id="detectionBadge" aria-live="polite">Scanning</span>
+  </header>
+
+  <!-- ══ Body ═════════════════════════════════ -->
+  <main class="popup-body">
+    <div class="error-msg" id="errorMsg" role="alert"></div>
+
+    <form id="applicationForm" novalidate>
+
+      <!-- ── Job Info ── -->
+      <div class="section-label">Job Info</div>
+
+      <div class="form-group">
+        <label for="company">Company *</label>
+        <input type="text" id="company" name="company"
+               placeholder="e.g. Google, Amazon, Infosys…"
+               autocomplete="organization" spellcheck="false">
+      </div>
+
+      <div class="form-group">
+        <label for="role">Role / Position *</label>
+        <input type="text" id="role" name="role"
+               placeholder="e.g. Software Engineer, Data Analyst…"
+               autocomplete="off" spellcheck="false">
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="dateApplied">Date Applied</label>
+          <input type="date" id="dateApplied" name="dateApplied">
+        </div>
+        <div class="form-group">
+          <label for="status">Status</label>
+          <select id="status" name="status">
+            <option value="In Progress" selected>In Progress</option>
+            <option value="Applied">Applied</option>
+            <option value="Screening">Screening</option>
+            <option value="Interview">Interview</option>
+            <option value="Offer">Offer</option>
+            <option value="Rejected">Rejected</option>
+            <option value="Ghosted">Ghosted</option>
+            <option value="Withdrawn">Withdrawn</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- ── Details ── -->
+      <div class="section-label">Details</div>
+
+      <!-- Job URL (auto-filled, read-only) -->
+      <div class="form-group">
+        <label for="postingUrl">Job Posting URL</label>
+        <input type="text" id="postingUrl" name="postingUrl"
+               placeholder="Auto-detected from current page…"
+               readonly tabindex="-1">
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="location">Location</label>
+          <input type="text" id="location" name="location"
+                 placeholder="Remote, Bengaluru, New York…"
+                 autocomplete="off">
+        </div>
+        <div class="form-group">
+          <label for="salary">Salary / Package</label>
+          <input type="text" id="salary" name="salary"
+                 placeholder="₹18 LPA, $120k, Not listed…"
+                 autocomplete="off">
+        </div>
+      </div>
+
+      <!-- Referral toggle -->
+      <div class="referral-row">
+        <label class="toggle-label" for="isReferral">
+          <input type="checkbox" id="isReferral" name="isReferral" class="toggle-input">
+          <span class="toggle-switch" aria-hidden="true"></span>
+          <span class="toggle-text">Referral</span>
+        </label>
+        <input type="text" id="referredBy" name="referredBy"
+               class="referral-name-input hidden"
+               placeholder="Referred by (name)…"
+               autocomplete="off">
+      </div>
+
+      <!-- Notes (collapsible) -->
+      <div class="notes-section">
+        <button type="button" class="notes-toggle-btn" id="notesToggle"
+                aria-expanded="false" aria-controls="notesBody">
+          ＋ Add Notes &amp; Recruiter Details
+        </button>
+        <div class="notes-body hidden" id="notesBody">
+          <div class="form-group" style="margin-top:8px">
+            <label for="recruiterName">Recruiter / HR Name</label>
+            <input type="text" id="recruiterName" name="recruiterName"
+                   placeholder="Recruiter contact (optional)…" autocomplete="off">
+          </div>
+          <div class="form-group">
+            <label for="notes">Notes</label>
+            <textarea id="notes" name="notes" rows="3"
+              placeholder="Interview rounds, salary, prep links, thoughts…"></textarea>
+          </div>
+        </div>
+      </div>
+
+    </form>
+  </main>
+
+  <!-- ══ Footer ═══════════════════════════════ -->
+  <footer class="popup-footer">
+    <div class="footer-meta">
+      <span id="totalApps">0 tracked</span>
+      <span class="sep">•</span>
+      <span class="sync-status" id="syncStatus"
+            title="Click to manage sync in Dashboard"
+            role="button" tabindex="0">
+        Connect Google Sheets
+      </span>
+    </div>
+    <div class="footer-actions">
+      <button type="button" id="openDashboard" class="btn-secondary">
+        Dashboard
+      </button>
+      <button type="submit" form="applicationForm" id="saveBtn" class="btn-primary">
+        <span id="saveBtnText">Save Application</span>
+      </button>
+    </div>
+  </footer>
+
+  <!-- Scripts (load in dependency order) -->
+  <script src="../utils/db.js"></script>
+  <script src="../utils/helpers.js"></script>
+  <script src="../utils/file-sync.js"></script>
+  <script src="../utils/google-auth.js"></script>
+  <script src="../utils/sheets-api.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

@@ -1,0 +1,52 @@
+{
+  "manifest_version": 3,
+  "name": "HireLog - Job Application Tracker",
+  "short_name": "HireLog",
+  "version": "1.0.0",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuAyMTPJhLQcXXu0dJ1o3tBFKClDHYB17Tzd/7gLlicfF45a0j00n0CxcbakTnTIw9jAzcfn0foXp1BNKlm7vKlLfhP1BguNME/ZpVLOixqjhxwX0AKklz/6eQAi8YFj3mL5i3W7OUzVR1s3GBpgB5QWwOwA2VJCkIYGaBwqTalL9zaKfp2srKORekGDnD7euXMRsQw0Q7rncRcwx+m7pLE052vlv7iGkn26v4dZODTiCu7GFn3NuxcGIco60fl9tK8pKwUWaINcq14ZlhhVyVEVDZCprfn7/xqERe5Ouiot4bUexAqMZY2KVTT2j648D/7mKQxycodbD45ly3y2JRwIDAQAB",
+  "description": "Track job applications from career portals. One-click save with auto-fill, reminders, and Google Sheets sync.",
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png"
+    },
+    "default_title": "HireLog — Track this job"
+  },
+  "background": {
+    "service_worker": "background/service-worker.js"
+  },
+
+  "permissions": [
+    "storage",
+    "alarms",
+    "notifications",
+    "activeTab",
+    "scripting",
+    "unlimitedStorage",
+    "identity"
+  ],
+  "oauth2": {
+    "client_id": "635245352409-mgkfdsmkdnlpfokvm4u6use9t8rj9dk0.apps.googleusercontent.com",
+    "scopes": [
+      "https://www.googleapis.com/auth/drive.file",
+      "openid",
+      "email",
+      "profile"
+    ]
+  },
+
+  "web_accessible_resources": [
+    {
+      "resources": ["dashboard/dashboard.html", "icons/*"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}

@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HireLog — Dashboard</title>
+  <meta name="description" content="Track all your job applications in one place">
+  <link rel="icon" href="../icons/hirelog-logo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+
+  <!-- ── Top Navigation ──────────────────── -->
+  <nav class="topnav" role="navigation">
+    <a class="nav-brand" href="#" id="navBrand" aria-label="HireLog home">
+      <img src="../icons/hirelog-logo.svg" alt="HireLog">
+      <span class="nav-brand-name">HireLog</span>
+    </a>
+
+    <div class="nav-tabs" role="tablist">
+      <button class="nav-tab active" data-tab="applications" role="tab" aria-selected="true" id="tab-applications">
+        Applications
+      </button>
+      <button class="nav-tab" data-tab="kanban" role="tab" aria-selected="false" id="tab-kanban">
+        Kanban
+      </button>
+      <button class="nav-tab" data-tab="timeline" role="tab" aria-selected="false" id="tab-timeline">
+        Timeline
+      </button>
+      <button class="nav-tab" data-tab="settings" role="tab" aria-selected="false" id="tab-settings">
+        Settings
+      </button>
+    </div>
+
+    <div class="nav-actions">
+      <div class="follow-up-badge" id="followUpBadge" title="Applications needing follow-up">
+        <span id="followUpCount">0</span> follow-ups
+      </div>
+      <button class="btn-export" id="exportBtn" title="Export all applications">
+        Export CSV
+      </button>
+    </div>
+  </nav>
+
+  <!-- ── Stats Row ───────────────────────── -->
+  <section class="stats-row" aria-label="Application statistics">
+    <div class="stat-card purple">
+      <div class="stat-icon">All</div>
+      <div class="stat-value" id="stat-total">0</div>
+      <div class="stat-label">Total Tracked</div>
+      <div class="stat-sub" id="stat-week">0 this week</div>
+    </div>
+    <div class="stat-card blue">
+      <div class="stat-icon">IP</div>
+      <div class="stat-value" id="stat-inprogress">0</div>
+      <div class="stat-label">In Progress</div>
+      <div class="stat-sub">Drafts / Not submitted</div>
+    </div>
+    <div class="stat-card teal">
+      <div class="stat-icon">AP</div>
+      <div class="stat-value" id="stat-applied">0</div>
+      <div class="stat-label">Applied</div>
+      <div class="stat-sub">Submitted applications</div>
+    </div>
+    <div class="stat-card green">
+      <div class="stat-icon">OF</div>
+      <div class="stat-value" id="stat-offers">0</div>
+      <div class="stat-label">Offers</div>
+      <div class="stat-sub">All time</div>
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════
+       TAB: Applications (Table)
+  ═══════════════════════════════════════ -->
+  <section class="tab-content active" id="tab-content-applications"
+           role="tabpanel" aria-labelledby="tab-applications">
+
+    <!-- Filter Bar -->
+    <div class="filter-bar">
+      <div class="search-wrap">
+        <span class="search-icon">/</span>
+        <input type="text" class="search-input" id="searchInput"
+               placeholder="Search company, role, notes…"
+               aria-label="Search applications">
+      </div>
+
+      <div class="filter-chips" role="group" aria-label="Filter by status">
+        <button class="chip active" data-status="All" id="chip-all">All</button>
+        <button class="chip" data-status="In Progress">In Progress</button>
+        <button class="chip" data-status="Applied">Applied</button>
+        <button class="chip" data-status="Screening">Screening</button>
+        <button class="chip" data-status="Interview">Interview</button>
+        <button class="chip" data-status="Offer">Offer</button>
+        <button class="chip" data-status="Rejected">Rejected</button>
+        <button class="chip" data-status="Ghosted">Ghosted</button>
+      </div>
+
+      <span class="filter-count" id="filterCount"></span>
+    </div>
+
+    <!-- Table -->
+    <div class="table-wrap" role="region" aria-label="Applications table" aria-live="polite">
+      <table class="app-table" id="appTable">
+        <thead>
+          <tr>
+            <th data-col="company" id="th-company">Company <span class="sort-arrow">↕</span></th>
+            <th data-col="role"    id="th-role">Role <span class="sort-arrow">↕</span></th>
+            <th data-col="status"  id="th-status">Status <span class="sort-arrow">↕</span></th>
+            <th data-col="dateApplied" id="th-date">Date Applied <span class="sort-arrow">↕</span></th>
+            <th data-col="source"  id="th-source">Source</th>
+            <th data-col="days"    id="th-days">Days / Follow-up</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="appTableBody">
+          <!-- Populated by JS -->
+        </tbody>
+      </table>
+
+      <!-- Empty state -->
+      <div class="empty-state hidden" id="emptyState">
+        <div class="empty-icon">📭</div>
+        <h3>No applications yet</h3>
+        <p>Click the HireLog extension icon on any job posting to save your first application.</p>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ════════════════════════════════════
+       TAB: Kanban
+  ═══════════════════════════════════════ -->
+  <section class="tab-content hidden" id="tab-content-kanban"
+           role="tabpanel" aria-labelledby="tab-kanban">
+    <div class="kanban-board" id="kanbanBoard" aria-label="Kanban application pipeline">
+      <!-- Columns populated by JS -->
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════
+       TAB: Timeline
+  ═══════════════════════════════════════ -->
+  <section class="tab-content hidden" id="tab-content-timeline"
+           role="tabpanel" aria-labelledby="tab-timeline">
+    <div id="timelineContent">
+      <!-- Populated by JS -->
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════
+       TAB: Settings
+  ═══════════════════════════════════════ -->
+  <section class="tab-content hidden" id="tab-content-settings"
+           role="tabpanel" aria-labelledby="tab-settings">
+    <div class="settings-section">
+
+      <!-- ── Google Sheets Sync ─────────────────── -->
+      <div class="settings-card" id="googleSheetsCard">
+        <h3>Google Sheets Sync</h3>
+        <p>
+          Sign in with Google to automatically sync all your applications to a Google Sheet
+          in your Drive. HireLog creates the sheet and keeps it updated on every save.
+        </p>
+
+        <!-- Privacy callout -->
+        <div class="privacy-callout">
+          <span class="privacy-icon">🔒</span>
+          <span>
+            <strong>Minimal permissions:</strong> HireLog uses Google's
+            <code>drive.file</code> scope — the most restrictive available.
+            It can <strong>only</strong> access the one spreadsheet it creates.
+            Your other Drive files, Gmail, and contacts are completely inaccessible.
+          </span>
+        </div>
+
+        <!-- ── Not signed in ──────────────────────── -->
+        <div id="googleNotSignedIn">
+          <button id="googleSignInBtn" class="btn-google" type="button">
+            <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">
+              <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+              <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+              <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+              <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+            </svg>
+            Sign in with Google
+          </button>
+
+          <!-- Shown only if the published app's Google sync is temporarily unavailable -->
+          <div class="setup-required-msg hidden" id="setupRequiredMsg">
+            <strong>Google sync is temporarily unavailable.</strong>
+            You can keep tracking applications locally and export CSV while this is fixed.
+          </div>
+        </div>
+
+        <!-- ── Signed in ───────────────────────────── -->
+        <div id="googleSignedIn" class="hidden">
+
+          <!-- Account row -->
+          <div class="google-account-row">
+            <img id="googleUserPic" class="google-avatar" src="" alt="Profile" width="38" height="38">
+            <div class="google-account-info">
+              <div class="google-user-name" id="googleUserName">Loading…</div>
+              <div class="google-user-email" id="googleUserEmail"></div>
+            </div>
+            <button class="btn-sm" id="googleSignOutBtn" type="button">Sign Out</button>
+          </div>
+
+          <!-- Sheet status -->
+          <div class="google-sheet-status" id="sheetStatusRow">
+            <span class="sheet-status-icon" id="sheetIcon">Sheet</span>
+            <div class="sheet-status-info">
+              <div class="sheet-name" id="sheetNameDisplay">HireLog — Job Application Tracker</div>
+              <div class="sheet-sync-time" id="lastSyncDisplay">Not synced yet</div>
+            </div>
+            <a id="openSheetBtn" href="#" target="_blank" rel="noopener"
+               class="btn-sm" style="text-decoration:none;white-space:nowrap">
+              Open in Sheets ↗
+            </a>
+          </div>
+
+          <div class="settings-actions" style="margin-top:12px">
+            <button class="btn-sm primary" id="syncNowGoogleBtn" type="button">Sync Now</button>
+            <button class="btn-sm danger" id="googleDisconnectBtn" type="button">Disconnect</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Local Backup ──────────────────────────── -->
+      <div class="settings-card">
+        <h3>📄 Local Backup (CSV)</h3>
+        <p>
+          Download a CSV copy of all your applications — no sign-in needed.
+          Opens in Excel, Google Sheets, Numbers, or any spreadsheet app.
+        </p>
+        <div class="settings-actions">
+          <button class="btn-sm" id="downloadCSVBtn" type="button">Download CSV</button>
+        </div>
+      </div>
+
+      <!-- ── Follow-up Reminder Days ─────────────────── -->
+      <div class="settings-card">
+        <h3>Follow-up Reminders</h3>
+        <p>
+          HireLog sends a browser notification when an application hasn't received a response
+          after the selected number of days. Choose your preferred follow-up window:
+        </p>
+        <div class="days-selector" id="daysSelector" role="group" aria-label="Follow-up days">
+          <button class="days-option" data-days="3">3 days</button>
+          <button class="days-option selected" data-days="7">7 days</button>
+          <button class="days-option" data-days="14">14 days</button>
+          <button class="days-option" data-days="30">30 days</button>
+        </div>
+      </div>
+
+      <!-- ── Danger Zone ─────────────────────────────── -->
+      <div class="settings-card danger-zone">
+        <h3>Danger Zone</h3>
+        <p>
+          Permanently delete all tracked applications. This cannot be undone.
+          Export your data first if you want a backup.
+        </p>
+        <div class="settings-actions">
+          <button class="btn-sm danger" id="clearAllBtn" type="button">Clear All Applications</button>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ════════════════════════════════════
+       Edit Application Modal
+  ═══════════════════════════════════════ -->
+  <div class="modal-overlay" id="editModalOverlay" role="dialog" aria-modal="true"
+       aria-labelledby="editModalTitle">
+    <div class="modal" id="editModal">
+      <div class="modal-header">
+        <h2 class="modal-title" id="editModalTitle">Edit Application</h2>
+        <button class="modal-close" id="editModalClose" aria-label="Close">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="edit-company">Company *</label>
+            <input type="text" id="edit-company" placeholder="Company name">
+          </div>
+          <div class="form-group">
+            <label for="edit-role">Role *</label>
+            <input type="text" id="edit-role" placeholder="Job title">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="edit-dateApplied">Date Applied</label>
+            <input type="date" id="edit-dateApplied">
+          </div>
+          <div class="form-group">
+            <label for="edit-status">Status</label>
+            <select id="edit-status">
+              <option>In Progress</option>
+              <option>Applied</option>
+              <option>Screening</option>
+              <option>Interview</option>
+              <option>Offer</option>
+              <option>Rejected</option>
+              <option>Ghosted</option>
+              <option>Withdrawn</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="edit-postingUrl">Job Posting URL</label>
+          <input type="text" id="edit-postingUrl" placeholder="https://...">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="edit-recruiterName">Recruiter Name</label>
+            <input type="text" id="edit-recruiterName" placeholder="Recruiter / HR name">
+          </div>
+          <div class="form-group">
+            <label for="edit-salary">Salary / Package</label>
+            <input type="text" id="edit-salary" placeholder="e.g. ₹18 LPA, $120k">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="edit-location">Location</label>
+            <input type="text" id="edit-location" placeholder="City, Remote, Hybrid…">
+          </div>
+          <div class="form-group">
+            <label for="edit-referredBy">Referred By</label>
+            <input type="text" id="edit-referredBy" placeholder="Name of referrer (if any)">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="edit-notes">Notes</label>
+          <textarea id="edit-notes" rows="4"
+            placeholder="Interview rounds, recruiter details, prep links, your thoughts…"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-sm" id="editCancelBtn">Cancel</button>
+        <button class="btn-sm primary" id="editSaveBtn">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Job Description Viewer Modal -->
+  <div class="modal-overlay" id="jdModalOverlay" role="dialog" aria-modal="true"
+       aria-labelledby="jdModalTitle">
+    <div class="modal" id="jdModal">
+      <div class="modal-header">
+        <h2 class="modal-title" id="jdModalTitle">Job Description Snapshot</h2>
+        <button class="modal-close" id="jdModalClose" aria-label="Close">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="jd-content" id="jdContent"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast container -->
+  <div class="toast-container" id="toastContainer" aria-live="polite"></div>
+
+  <!-- Scripts (load in dependency order) -->
+  <script src="../utils/db.js"></script>
+  <script src="../utils/helpers.js"></script>
+  <script src="../utils/file-sync.js"></script>
+  <script src="../utils/google-auth.js"></script>
+  <script src="../utils/sheets-api.js"></script>
+  <script src="dashboard.js"></script>
+</body>
+</html>
